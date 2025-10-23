@@ -1,4 +1,4 @@
-package com.example.myapp010ahadejcislo
+package com.example.myapp010
 
 import android.os.Bundle
 import android.widget.Toast
@@ -6,7 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.myapp010ahadejcislo.databinding.ActivityMainBinding
+import com.example.myapp010.databinding.ActivityMainBinding
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         newNumber()
 
         binding.btnCheck.setOnClickListener {
-            val guessTip = binding.etGuess.toString()
+            val guessTip = binding.etGuess.text.toString()
             if(guessTip.isEmpty()) {
                 Toast.makeText(this, "Musíš zadat číslo!!!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
