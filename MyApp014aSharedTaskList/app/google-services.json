@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "335577561630",
+    "project_id": "myapp014asharedtasklist-98d54",
+    "storage_bucket": "myapp014asharedtasklist-98d54.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335577561630:android:ff6dc6959a253bfe540c0f",
+        "android_client_info": {
+          "package_name": "com.example.myapp014asharedtasklist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD08LL00J-02MpmSgWn2GL5GrjJBEsBnd0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
