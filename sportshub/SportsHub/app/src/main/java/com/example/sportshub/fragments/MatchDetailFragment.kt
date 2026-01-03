@@ -148,16 +148,16 @@ class MatchDetailFragment : Fragment() {
                     val possession = match.possession!!
                     val shots = match.shots!!
 
-                    tvPossessionHome.text = "${possession["first"]}%"
-                    tvPossessionAway.text = "${possession["second"]}%"
-                    progressPossession.progress = possession["first"] ?: 50
+                    tvPossessionHome.text = "${possession.first}%"
+                    tvPossessionAway.text = "${possession.second}%"
+                    progressPossession.progress = possession.first
 
-                    tvShotsHome.text = shots["first"].toString()
-                    tvShotsAway.text = shots["second"].toString()
+                    tvShotsHome.text = shots.first.toString()
+                    tvShotsAway.text = shots.second.toString()
 
-                    val totalShots = (shots["first"] ?: 0) + (shots["second"] ?: 0)
+                    val totalShots = shots.first + shots.second
                     if (totalShots > 0) {
-                        progressShots.progress = ((shots["first"] ?: 0) * 100 / totalShots)
+                        progressShots.progress = (shots.first * 100 / totalShots)
                     }
                 }
 
