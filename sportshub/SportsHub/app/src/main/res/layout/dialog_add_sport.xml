@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Název sportu"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etSportName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Např. Fotbal"
+        android:minHeight="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Ikona (emoji)"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etSportIcon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="⚽ 🏀 🏐 ⚾ 🎾 🏓"
+        android:minHeight="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Typ sportu"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupSportType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioTeam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Týmový sport (s protihráčem a skóre)" />
+
+        <RadioButton
+            android:id="@+id/radioIndividual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Individuální (čas a poznámka)" />
+    </RadioGroup>
+
+</LinearLayout>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/programFragment">
+
+    <fragment
+        android:id="@+id/programFragment"
+        android:name="com.example.sportshub.fragments.ProgramFragment"
+        android:label="Program" />
+
+    <fragment
+        android:id="@+id/resultsFragment"
+        android:name="com.example.sportshub.fragments.ResultsFragment"
+        android:label="Výsledky" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.sportshub.fragments.FavoritesFragment"
+        android:label="Oblíbené" />
+
+    <fragment
+        android:id="@+id/sportsFragment"
+        android:name="com.example.sportshub.fragments.SportsFragment"
+        android:label="Sporty" />
+
+    <fragment
+        android:id="@+id/matchDetailFragment"
+        android:name="com.example.sportshub.fragments.MatchDetailFragment"
+        android:label="Detail zápasu">
+        <argument
+            android:name="matchId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addMatchFragment"
+        android:name="com.example.sportshub.fragments.AddMatchFragment"
+        android:label="Nový zápas" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.sportshub.fragments.SettingsFragment"
+        android:label="Nastavení" />
+
+    <!-- Global Actions -->
+    <action
+        android:id="@+id/action_global_matchDetailFragment"
+        app:destination="@id/matchDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_addMatchFragment"
+        app:destination="@id/addMatchFragment" />
+
+</navigation>

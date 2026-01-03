@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minuta"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etMinute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Např. 45"
+            android:inputType="number"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Typ události"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupEventType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="⚽ Gól" />
+
+            <RadioButton
+                android:id="@+id/radioYellowCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🟨 Žlutá karta" />
+
+            <RadioButton
+                android:id="@+id/radioRedCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🟥 Červená karta" />
+
+            <RadioButton
+                android:id="@+id/radioSubstitution"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔄 Střídání" />
+
+            <RadioButton
+                android:id="@+id/radioOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📝 Jiné" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Tým"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupTeam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioHome"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Domácí" />
+
+            <RadioButton
+                android:id="@+id/radioAway"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hosté" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Hráč (volitelné)"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etPlayerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Jméno hráče"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Poznámka (volitelná)"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dodatečné info..."
+            android:inputType="textMultiLine"
+            android:lines="2"
+            android:minHeight="48dp" />
+
+    </LinearLayout>
+</ScrollView>

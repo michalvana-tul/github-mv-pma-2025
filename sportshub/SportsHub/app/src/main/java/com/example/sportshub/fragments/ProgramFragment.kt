@@ -1,0 +1,83 @@
+package com.example.sportshub.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sportshub.R
+import com.example.sportshub.adapters.MatchAdapter
+import com.example.sportshub.databinding.FragmentProgramBinding
+import com.example.sportshub.repository.MatchFilter
+import com.example.sportshub.viewmodel.SharedViewModel
+import kotlinx.coroutines.launch
+
+class ProgramFragment : Fragment() {
+
+    private var _binding: FragmentProgramBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: SharedViewModel by activityViewModels()
+    private lateinit var adapter: MatchAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentProgramBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupListeners()
+        observeMatches()
+
+        // Filtr na nadcházející a živé zápasy
+        viewModel.setFilter(MatchFilter.UPCOMING)
+    }
+
+    private fun setupRecyclerView() {
+        adapter = MatchAdapter(
+            onMatchClick = { match ->
+                val action = ProgramFragmentDirections
+                    .actionGlobalMatchDetailFragment(match.id)
+                findNavController().navigate(action)
+            },
+            onFavoriteClick = { match ->
+                viewModel.toggleFavorite(match.id, !match.isFavorite)
+            }
+        )
+
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@ProgramFragment.adapter
+        }
+    }
+
+    private fun setupListeners() {
+        binding.fabAddMatch.setOnClickListener {
+            findNavController().navigate(R.id.action_global_addMatchFragment)
+        }
+    }
+
+    private fun observeMatches() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.matches.collect { matches ->
+                adapter.submitList(matches)
+                binding.tvEmpty.visibility = if (matches.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

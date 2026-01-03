@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vyberte sport"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerSport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:id="@+id/tvSelectedDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="📅 Datum a čas"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnSelectDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vybrat datum a čas" />
+
+        <!-- Týmová pole -->
+        <LinearLayout
+            android:id="@+id/layoutTeamFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Domácí tým"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etHomeTeam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Název domácího týmu"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Barva domácích (hex)" />
+
+            <EditText
+                android:id="@+id/etHomeColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="#6200EE"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Hosté"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAwayTeam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Název hostujícího týmu"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Barva hostů (hex)" />
+
+            <EditText
+                android:id="@+id/etAwayColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="#03DAC5"
+                android:minHeight="48dp" />
+
+            <CheckBox
+                android:id="@+id/cbIsLive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Spustit jako LIVE zápas" />
+        </LinearLayout>
+
+        <!-- Individuální pole -->
+        <LinearLayout
+            android:id="@+id/layoutIndividualFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Délka trvání (minuty)"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Např. 45"
+                android:inputType="number"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Poznámka"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Volitelná poznámka..."
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:minHeight="48dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Uložit"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</ScrollView>
