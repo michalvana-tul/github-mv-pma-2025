@@ -14,7 +14,7 @@ class GameViewModel(private val repository: GeoRepository) : ViewModel() {
     private val _currentQuestion = MutableLiveData<Question>()
     val currentQuestion: LiveData<Question> = _currentQuestion
 
-    private val _gameState = MutableLiveData<Int>(0) // 0: Login, 1: Menu, 2: Playing, 3: Profile, 4: GameOver, 5: AddQuestion
+    private val _gameState = MutableLiveData<Int>(0) // 0: Login, 1: Menu, 2: Playing, 3: Profile, 4: GameOver, 5: AddQuestion, 6: ManageCountries
     val gameState: LiveData<Int> = _gameState
 
     private val _score = MutableLiveData<Int>(0)
@@ -25,6 +25,8 @@ class GameViewModel(private val repository: GeoRepository) : ViewModel() {
 
     private val _pastResults = MutableLiveData<List<GameResultEntity>>()
     val pastResults: LiveData<List<GameResultEntity>> = _pastResults
+
+    val allCountries: LiveData<List<CountryEntity>> = repository.getAllCountriesFlow().asLiveData()
 
     data class Question(
         val country: String,
@@ -123,6 +125,18 @@ class GameViewModel(private val repository: GeoRepository) : ViewModel() {
         }
     }
 
+    fun updateCountry(country: CountryEntity) {
+        viewModelScope.launch {
+            repository.updateCountry(country)
+        }
+    }
+
+    fun deleteCountry(country: CountryEntity) {
+        viewModelScope.launch {
+            repository.deleteCountry(country)
+        }
+    }
+
     fun goToMenu() {
         _gameState.value = 1
     }
@@ -133,6 +147,10 @@ class GameViewModel(private val repository: GeoRepository) : ViewModel() {
 
     fun goToAddQuestion() {
         _gameState.value = 5
+    }
+
+    fun goToManageCountries() {
+        _gameState.value = 6
     }
 }
 

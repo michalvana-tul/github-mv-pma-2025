@@ -17,8 +17,17 @@ interface GeoDao {
     @Query("SELECT * FROM countries")
     suspend fun getAllCountries(): List<CountryEntity>
 
+    @Query("SELECT * FROM countries ORDER BY countryName ASC")
+    fun getAllCountriesFlow(): Flow<List<CountryEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCountry(country: CountryEntity)
+
+    @Update
+    suspend fun updateCountry(country: CountryEntity)
+
+    @Delete
+    suspend fun deleteCountry(country: CountryEntity)
 
     @Insert
     suspend fun insertCountries(countries: List<CountryEntity>)

@@ -14,8 +14,18 @@ class GeoRepository(private val geoDao: GeoDao) {
 
     suspend fun getAllCountries() = geoDao.getAllCountries()
 
+    fun getAllCountriesFlow(): Flow<List<CountryEntity>> = geoDao.getAllCountriesFlow()
+
     suspend fun addCountry(country: CountryEntity) {
         geoDao.insertCountry(country)
+    }
+
+    suspend fun updateCountry(country: CountryEntity) {
+        geoDao.updateCountry(country)
+    }
+
+    suspend fun deleteCountry(country: CountryEntity) {
+        geoDao.deleteCountry(country)
     }
 
     suspend fun saveResult(userId: Int, score: Int) {
