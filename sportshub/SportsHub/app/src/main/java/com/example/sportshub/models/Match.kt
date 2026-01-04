@@ -9,8 +9,8 @@ data class Match(
     // Týmové informace
     val homeTeam: String = "",
     val awayTeam: String = "",
-    val homeTeamColor: String = "#6200EE", // Barva domácích
-    val awayTeamColor: String = "#03DAC5", // Barva hostů
+    val homeTeamColor: String = "#6200EE",
+    val awayTeamColor: String = "#03DAC5",
 
     // Skóre
     val homeScore: Int = 0,
@@ -23,17 +23,17 @@ data class Match(
     // Stav
     val isLive: Boolean = false,
     val isFinished: Boolean = false,
-    val isFavorite: Boolean = false,
 
     // Timeline
     val events: List<MatchEvent> = emptyList(),
 
-    // Statistiky (generované)
-    val possession: Pair<Int, Int>? = null, // např. (60, 40)
-    val shots: Pair<Int, Int>? = null,      // např. (12, 8)
+    // Statistiky
+    val possession: Map<String, Int>? = null,
+    val shots: Map<String, Int>? = null,
 
     // Metadata
     val date: String = "",
     val timestamp: Long = System.currentTimeMillis(),
+    val endTimestamp: Long = System.currentTimeMillis() + (90 * 60 * 1000),
     val imageUrl: String? = null
 )

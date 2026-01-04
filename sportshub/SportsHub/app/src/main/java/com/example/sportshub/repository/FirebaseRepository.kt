@@ -2,6 +2,7 @@ package com.example.sportshub.repository
 
 import com.example.sportshub.models.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +31,8 @@ class FirebaseRepository {
 
     suspend fun addSport(sport: Sport): Result<String> {
         return try {
-            val docRef = sportsRef.add(sport).await()
+            val docRef = sportsRef.document()
+            docRef.set(sport).await()
             Result.success(docRef.id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -48,33 +50,73 @@ class FirebaseRepository {
 
     // ===== MATCHES =====
     fun getMatchesFlow(filter: MatchFilter = MatchFilter.ALL): Flow<List<Match>> = callbackFlow {
-        var query: Query = matchesRef.orderBy("timestamp", Query.Direction.DESCENDING)
-
-        query = when (filter) {
-            MatchFilter.UPCOMING -> query.whereEqualTo("isFinished", false)
-                .whereEqualTo("isLive", false)
-            MatchFilter.LIVE -> query.whereEqualTo("isLive", true)
-            MatchFilter.FINISHED -> query.whereEqualTo("isFinished", true)
-            MatchFilter.FAVORITES -> query.whereEqualTo("isFavorite", true)
-            MatchFilter.ALL -> query
-        }
-
-        val listener = query.addSnapshotListener { snapshot, error ->
+        val listener = matchesRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)
                 return@addSnapshotListener
             }
-            val matches = snapshot?.documents?.mapNotNull { doc ->
+            
+            val now = System.currentTimeMillis()
+            
+            val allMatches = snapshot?.documents?.mapNotNull { doc ->
                 doc.toObject(Match::class.java)?.copy(id = doc.id)
             } ?: emptyList()
-            trySend(matches)
+
+            val filteredMatches = when (filter) {
+                MatchFilter.UPCOMING -> allMatches.filter { 
+                    if (it.sportType == SportType.INDIVIDUAL) {
+                        it.duration == 0
+                    } else {
+                        !it.isFinished && it.endTimestamp > now 
+                    }
+                }
+                
+                MatchFilter.FINISHED -> allMatches.filter { 
+                    if (it.sportType == SportType.INDIVIDUAL) {
+                        it.duration > 0
+                    } else {
+                        it.isFinished || it.endTimestamp <= now 
+                    }
+                }
+                
+                MatchFilter.LIVE -> allMatches.filter { 
+                    it.sportType == SportType.TEAM && 
+                    (it.isLive || (it.timestamp <= now && it.endTimestamp > now)) && !it.isFinished 
+                }
+                
+                MatchFilter.ALL -> allMatches
+                else -> allMatches // Failsafe
+            }
+
+            trySend(filteredMatches.sortedByDescending { it.timestamp })
         }
         awaitClose { listener.remove() }
     }
 
     suspend fun addMatch(match: Match): Result<String> {
         return try {
-            val docRef = matchesRef.add(match).await()
+            val docRef = matchesRef.document()
+            val matchMap = hashMapOf(
+                "sportId" to match.sportId,
+                "sportName" to match.sportName,
+                "sportType" to match.sportType.name,
+                "homeTeam" to match.homeTeam,
+                "awayTeam" to match.awayTeam,
+                "homeTeamColor" to match.homeTeamColor,
+                "awayTeamColor" to match.awayTeamColor,
+                "homeScore" to match.homeScore,
+                "awayScore" to match.awayScore,
+                "duration" to match.duration,
+                "notes" to match.notes,
+                "isLive" to match.isLive,
+                "isFinished" to match.isFinished,
+                "date" to match.date,
+                "timestamp" to match.timestamp,
+                "endTimestamp" to match.endTimestamp,
+                "events" to emptyList<Any>()
+            )
+
+            docRef.set(matchMap).await()
             Result.success(docRef.id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -99,12 +141,21 @@ class FirebaseRepository {
         }
     }
 
-    suspend fun toggleFavorite(matchId: String, isFavorite: Boolean): Result<Unit> {
-        return updateMatch(matchId, mapOf("isFavorite" to isFavorite))
+    suspend fun deleteAllMatches(): Result<Unit> {
+        return try {
+            val snapshot = matchesRef.get().await()
+            val batch = db.batch()
+            for (doc in snapshot.documents) {
+                batch.delete(doc.reference)
+            }
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun finishMatch(matchId: String, match: Match): Result<Unit> {
-        // Generování náhodných statistik
         val totalScore = match.homeScore + match.awayScore
         val possession = generatePossession(match.homeScore, match.awayScore)
         val shots = generateShots(match.homeScore, match.awayScore, totalScore)
@@ -112,6 +163,7 @@ class FirebaseRepository {
         val updates = mapOf(
             "isLive" to false,
             "isFinished" to true,
+            "endTimestamp" to System.currentTimeMillis(),
             "possession" to possession,
             "shots" to shots
         )
@@ -143,5 +195,5 @@ class FirebaseRepository {
 }
 
 enum class MatchFilter {
-    ALL, UPCOMING, LIVE, FINISHED, FAVORITES
+    ALL, UPCOMING, LIVE, FINISHED
 }

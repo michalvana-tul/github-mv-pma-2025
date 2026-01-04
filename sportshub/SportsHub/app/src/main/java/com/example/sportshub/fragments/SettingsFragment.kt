@@ -8,10 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.example.sportshub.databinding.FragmentSettingsBinding
 import com.example.sportshub.viewmodel.SharedViewModel
-import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
 
@@ -37,18 +35,18 @@ class SettingsFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnClearMatches.setOnClickListener {
+            val context = requireContext().applicationContext
             AlertDialog.Builder(requireContext())
                 .setTitle("Smazat všechna data")
                 .setMessage("Opravdu chcete smazat všechny zápasy?")
                 .setPositiveButton("Smazat vše") { _, _ ->
                     viewModel.deleteAllMatches { result ->
-                        // Používáme lifecycleScope pro bezpečné zobrazení Toastu
-                        viewLifecycleOwner.lifecycleScope.launch {
+                        activity?.runOnUiThread {
                             if (result.isSuccess) {
-                                Toast.makeText(requireContext().applicationContext, "Všechna data byla smazána", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Všechna data byla smazána", Toast.LENGTH_LONG).show()
                             } else {
                                 val error = result.exceptionOrNull()?.message ?: "Neznámá chyba"
-                                Toast.makeText(requireContext().applicationContext, "Chyba: $error", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Chyba: $error", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
