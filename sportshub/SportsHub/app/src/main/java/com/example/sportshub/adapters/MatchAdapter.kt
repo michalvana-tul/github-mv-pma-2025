@@ -12,8 +12,7 @@ import com.example.sportshub.models.Match
 import com.example.sportshub.models.SportType
 
 class MatchAdapter(
-    private val onMatchClick: (Match) -> Unit,
-    private val onFavoriteClick: (Match) -> Unit
+    private val onMatchClick: (Match) -> Unit
 ) : ListAdapter<Match, MatchAdapter.MatchViewHolder>(MatchDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
@@ -35,16 +34,19 @@ class MatchAdapter(
 
         fun bind(match: Match) {
             binding.apply {
+                tvSportName.text = match.sportName
+                tvDate.text = match.date
+
                 if (match.sportType == SportType.TEAM) {
-                    // Týmový sport
                     tvHomeTeam.text = match.homeTeam
                     tvAwayTeam.text = match.awayTeam
                     tvScore.text = "${match.homeScore} : ${match.awayScore}"
 
-                    // Barvy týmů
                     try {
-                        viewHomeColor.setBackgroundColor(Color.parseColor(match.homeTeamColor))
-                        viewAwayColor.setBackgroundColor(Color.parseColor(match.awayTeamColor))
+                        val hColor = if (match.homeTeamColor.isNullOrEmpty() || !match.homeTeamColor.startsWith("#")) "#6200EE" else match.homeTeamColor
+                        val aColor = if (match.awayTeamColor.isNullOrEmpty() || !match.awayTeamColor.startsWith("#")) "#03DAC5" else match.awayTeamColor
+                        viewHomeColor.setBackgroundColor(Color.parseColor(hColor))
+                        viewAwayColor.setBackgroundColor(Color.parseColor(aColor))
                     } catch (e: Exception) {
                         viewHomeColor.setBackgroundColor(Color.GRAY)
                         viewAwayColor.setBackgroundColor(Color.GRAY)
@@ -52,55 +54,39 @@ class MatchAdapter(
 
                     layoutTeamMatch.visibility = View.VISIBLE
                     layoutIndividualMatch.visibility = View.GONE
-                } else {
-                    // Individuální aktivita
-                    tvActivityName.text = match.sportName
-                    tvActivityDuration.text = "${match.duration} min"
-                    tvActivityNotes.text = match.notes.ifEmpty { "Bez poznámky" }
+                    
+                    val statusVisible = match.isLive || match.isFinished
+                    tvStatus.visibility = if (statusVisible) View.VISIBLE else View.GONE
+                    tvStatus.text = if (match.isLive) "🔴 LIVE" else "✓ Ukončeno"
+                    layoutAddTime.visibility = View.GONE
 
+                } else {
                     layoutTeamMatch.visibility = View.GONE
                     layoutIndividualMatch.visibility = View.VISIBLE
-                }
+                    
+                    tvActivityName.text = match.sportName
+                    tvActivityNotes.text = match.notes.ifEmpty { "Bez poznámky" }
 
-                // Sport název a datum
-                tvSportName.text = match.sportName
-                tvDate.text = match.date
-
-                // Status
-                when {
-                    match.isLive -> {
-                        tvStatus.text = "🔴 LIVE"
-                        tvStatus.visibility = View.VISIBLE
-                    }
-                    match.isFinished -> {
-                        tvStatus.text = "✓ Ukončeno"
-                        tvStatus.visibility = View.VISIBLE
-                    }
-                    else -> {
+                    if (match.duration == 0) {
+                        tvActivityDuration.visibility = View.GONE
+                        layoutAddTime.visibility = View.VISIBLE
                         tvStatus.visibility = View.GONE
+                    } else {
+                        tvActivityDuration.visibility = View.VISIBLE
+                        tvActivityDuration.text = "⏱️ ${match.duration} min"
+                        layoutAddTime.visibility = View.GONE
+                        tvStatus.visibility = View.VISIBLE
+                        tvStatus.text = "✓ Hotovo"
                     }
                 }
 
-                // Oblíbené
-                ivFavorite.setImageResource(
-                    if (match.isFavorite) android.R.drawable.btn_star_big_on
-                    else android.R.drawable.btn_star_big_off
-                )
-
-                // Click listeners
                 root.setOnClickListener { onMatchClick(match) }
-                ivFavorite.setOnClickListener { onFavoriteClick(match) }
             }
         }
     }
 
     private class MatchDiffCallback : DiffUtil.ItemCallback<Match>() {
-        override fun areItemsTheSame(oldItem: Match, newItem: Match): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Match, newItem: Match): Boolean {
-            return oldItem == newItem
-        }
+        override fun areItemsTheSame(oldItem: Match, newItem: Match) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Match, newItem: Match) = oldItem == newItem
     }
 }

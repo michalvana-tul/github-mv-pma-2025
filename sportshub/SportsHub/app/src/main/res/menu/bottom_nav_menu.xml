@@ -4,19 +4,12 @@
         android:id="@+id/programFragment"
         android:icon="@android:drawable/ic_menu_today"
         android:title="Program" />
-
     <item
         android:id="@+id/resultsFragment"
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="Výsledky" />
-
     <item
-        android:id="@+id/favoritesFragment"
-        android:icon="@android:drawable/btn_star"
-        android:title="Oblíbené" />
-
-    <item
-        android:id="@+id/sportsFragment"
+        android:id="@+id/settingsFragment"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Sporty" />
+        android:title="Nastavení" />
 </menu>

@@ -11,23 +11,68 @@ import kotlinx.coroutines.launch
 class SharedViewModel : ViewModel() {
     private val repository = FirebaseRepository()
 
-    // Sports
     val sports = repository.getSportsFlow()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Matches with filter
+    private val allMatchesFlow = repository.getMatchesFlow(MatchFilter.ALL)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val allMatches = allMatchesFlow
+
     private val _currentFilter = MutableStateFlow(MatchFilter.ALL)
     val currentFilter = _currentFilter.asStateFlow()
 
-    val matches = _currentFilter.flatMapLatest { filter ->
-        repository.getMatchesFlow(filter)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val matches = combine(allMatchesFlow, _currentFilter) { list, filter ->
+        val now = System.currentTimeMillis()
+        when (filter) {
+            MatchFilter.UPCOMING -> list.filter { 
+                if (it.sportType == SportType.INDIVIDUAL) it.duration == 0 
+                else !it.isFinished && it.endTimestamp > now 
+            }
+            MatchFilter.FINISHED -> list.filter { 
+                if (it.sportType == SportType.INDIVIDUAL) it.duration > 0 
+                else it.isFinished || it.endTimestamp <= now 
+            }
+            MatchFilter.LIVE -> list.filter { 
+                it.sportType == SportType.TEAM && 
+                (it.isLive || (it.timestamp <= now && it.endTimestamp > now)) && !it.isFinished 
+            }
+            MatchFilter.ALL -> list
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun setFilter(filter: MatchFilter) {
         _currentFilter.value = filter
     }
 
-    // Sport operations
+    fun addMatch(match: Match, onResult: (Result<String>) -> Unit) {
+        viewModelScope.launch {
+            val result = repository.addMatch(match)
+            onResult(result)
+        }
+    }
+
+    fun updateMatch(matchId: String, updates: Map<String, Any>, onResult: ((Result<Unit>) -> Unit)? = null) {
+        viewModelScope.launch {
+            val result = repository.updateMatch(matchId, updates)
+            onResult?.invoke(result)
+        }
+    }
+
+    fun deleteMatch(matchId: String, onResult: (Result<Unit>) -> Unit) {
+        viewModelScope.launch {
+            val result = repository.deleteMatch(matchId)
+            onResult(result)
+        }
+    }
+
+    fun deleteAllMatches(onResult: (Result<Unit>) -> Unit) {
+        viewModelScope.launch {
+            val result = repository.deleteAllMatches()
+            onResult(result)
+        }
+    }
+
     fun addSport(sport: Sport, onResult: (Result<String>) -> Unit) {
         viewModelScope.launch {
             val result = repository.addSport(sport)
@@ -39,34 +84,6 @@ class SharedViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.deleteSport(sportId)
             onResult(result)
-        }
-    }
-
-    // Match operations
-    fun addMatch(match: Match, onResult: (Result<String>) -> Unit) {
-        viewModelScope.launch {
-            val result = repository.addMatch(match)
-            onResult(result)
-        }
-    }
-
-    fun updateMatch(matchId: String, updates: Map<String, Any>, onResult: (Result<Unit>) -> Unit) {
-        viewModelScope.launch {
-            val result = repository.updateMatch(matchId, updates)
-            onResult(result)
-        }
-    }
-
-    fun deleteMatch(matchId: String, onResult: (Result<Unit>) -> Unit) {
-        viewModelScope.launch {
-            val result = repository.deleteMatch(matchId)
-            onResult(result)
-        }
-    }
-
-    fun toggleFavorite(matchId: String, isFavorite: Boolean) {
-        viewModelScope.launch {
-            repository.toggleFavorite(matchId, isFavorite)
         }
     }
 

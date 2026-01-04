@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sportshub.adapters.MatchAdapter
@@ -36,8 +38,10 @@ class ResultsFragment : Fragment() {
 
         setupRecyclerView()
         observeMatches()
+    }
 
-        // Filtr na dokončené zápasy
+    override fun onResume() {
+        super.onResume()
         viewModel.setFilter(MatchFilter.FINISHED)
     }
 
@@ -47,9 +51,6 @@ class ResultsFragment : Fragment() {
                 val action = ResultsFragmentDirections
                     .actionGlobalMatchDetailFragment(match.id)
                 findNavController().navigate(action)
-            },
-            onFavoriteClick = { match ->
-                viewModel.toggleFavorite(match.id, !match.isFavorite)
             }
         )
 
@@ -61,9 +62,11 @@ class ResultsFragment : Fragment() {
 
     private fun observeMatches() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.matches.collect { matches ->
-                adapter.submitList(matches)
-                binding.tvEmpty.visibility = if (matches.isEmpty()) View.VISIBLE else View.GONE
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.matches.collect { matches ->
+                    adapter.submitList(matches)
+                    binding.tvEmpty.visibility = if (matches.isEmpty()) View.VISIBLE else View.GONE
+                }
             }
         }
     }

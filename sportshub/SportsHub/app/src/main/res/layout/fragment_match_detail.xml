@@ -12,7 +12,6 @@
 
         <!-- Header Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -26,11 +25,11 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/tvStatus"
+                    android:id="@+id/tvSportName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="📅 Plánováno"
+                    android:text="Fotbal"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -45,66 +44,64 @@
 
                 <!-- Týmový zápas -->
                 <LinearLayout
-                    android:id="@+id/layoutTeamMatch"
+                    android:id="@+id/layoutTeamDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginTop="16dp">
 
-                    <TextView
-                        android:id="@+id/tvHomeTeam"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Domácí"
-                        android:textSize="18sp"
-                        android:textAlignment="center" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center"
-                        android:layout_marginVertical="8dp">
+                        android:gravity="center">
+
+                        <View
+                            android:id="@+id/viewHomeColor"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="#6200EE" />
 
                         <TextView
-                            android:id="@+id/tvHomeScore"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvHomeTeam"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="48sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
+                            android:layout_weight="1"
+                            android:text="Domácí"
+                            android:textSize="18sp"
+                            android:textAlignment="viewEnd" />
 
                         <TextView
+                            android:id="@+id/tvScore"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="16dp"
-                            android:text=":"
-                            android:textSize="48sp"
+                            android:text="0 : 0"
+                            android:textSize="32sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvAwayScore"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvAwayTeam"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="48sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
+                            android:layout_weight="1"
+                            android:text="Hosté"
+                            android:textSize="18sp"
+                            android:textAlignment="viewStart" />
 
-                    <TextView
-                        android:id="@+id/tvAwayTeam"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Hosté"
-                        android:textSize="18sp"
-                        android:textAlignment="center" />
+                        <View
+                            android:id="@+id/viewAwayColor"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="8dp"
+                            android:background="#03DAC5" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- Individuální aktivita -->
                 <LinearLayout
-                    android:id="@+id/layoutIndividualMatch"
+                    android:id="@+id/layoutIndividualDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -121,7 +118,7 @@
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/tvActivityDuration"
+                        android:id="@+id/tvDuration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -130,7 +127,7 @@
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/tvActivityNotes"
+                        android:id="@+id/tvNotes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -141,105 +138,14 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Score Controls (Live) -->
+        <!-- Ovládání zápasu (Goals / Cards) -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/layoutScoreControls"
+            android:id="@+id/layoutAddEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Domácí"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
-
-                        <Button
-                            android:id="@+id/btnDecreaseHome"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:text="-"
-                            android:textSize="20sp" />
-
-                        <Button
-                            android:id="@+id/btnIncreaseHome"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="8dp"
-                            android:text="+"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hosté"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
-
-                        <Button
-                            android:id="@+id/btnDecreaseAway"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:text="-"
-                            android:textSize="20sp" />
-
-                        <Button
-                            android:id="@+id/btnIncreaseAway"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="8dp"
-                            android:text="+"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Timeline (Live Minuta) -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/layoutTimeline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:visibility="gone">
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -250,20 +156,116 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="⏱️ Timeline zápasu"
-                    android:textSize="18sp"
+                    android:text="Aktualizovat stav"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewEvents"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false" />
+                    android:orientation="horizontal">
+
+                    <!-- Home Team Actions -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <Button
+                            android:id="@+id/btnAddGoalHome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="⚽ Gól"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                        <Button
+                            android:id="@+id/btnAddCardHome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🟨 Žlutá"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="#FBC02D"/>
+                        <Button
+                            android:id="@+id/btnAddRedCardHome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🟥 Červená"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="#D32F2F"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#EEEEEE" android:layout_marginHorizontal="8dp"/>
+
+                    <!-- Away Team Actions -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <Button
+                            android:id="@+id/btnAddGoalAway"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="⚽ Gól"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                        <Button
+                            android:id="@+id/btnAddCardAway"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🟨 Žlutá"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="#FBC02D"/>
+                        <Button
+                            android:id="@+id/btnAddRedCardAway"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🟥 Červená"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:textColor="#D32F2F"/>
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Statistiky (Random Stats) -->
+        <!-- Timeline -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏱️ Timeline"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tvNoEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Zatím žádné události"
+                    android:textAlignment="center"
+                    android:textColor="#888888" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Statistiky -->
         <androidx.cardview.widget.CardView
             android:id="@+id/layoutStats"
             android:layout_width="match_parent"
@@ -287,7 +289,6 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Držení míče -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -305,8 +306,7 @@
                         android:id="@+id/tvPossessionHome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="60%"
-                        android:textSize="14sp" />
+                        android:text="50%" />
 
                     <ProgressBar
                         android:id="@+id/progressPossession"
@@ -315,18 +315,15 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginHorizontal="8dp"
-                        android:max="100"
-                        android:progress="60" />
+                        android:max="100" />
 
                     <TextView
                         android:id="@+id/tvPossessionAway"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="40%"
-                        android:textSize="14sp" />
+                        android:text="50%" />
                 </LinearLayout>
 
-                <!-- Střely -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -345,25 +342,15 @@
                         android:id="@+id/tvShotsHome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="12"
-                        android:textSize="14sp" />
+                        android:text="0" />
 
-                    <ProgressBar
-                        android:id="@+id/progressShots"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginHorizontal="8dp"
-                        android:max="100"
-                        android:progress="60" />
+                    <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
 
                     <TextView
                         android:id="@+id/tvShotsAway"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="8"
-                        android:textSize="14sp" />
+                        android:text="0" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -376,28 +363,19 @@
             android:padding="8dp">
 
             <Button
-                android:id="@+id/btnAddEvent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="➕ Přidat událost"
-                android:visibility="gone" />
-
-            <Button
                 android:id="@+id/btnFinishMatch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:backgroundTint="#4CAF50"
-                android:text="✅ Ukončit zápas"
-                android:visibility="gone" />
+                android:text="✅ Ukončit zápas" />
 
             <Button
-                android:id="@+id/btnDelete"
+                android:id="@+id/btnEditDuration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="#F44336"
-                android:text="🗑️ Smazat zápas" />
+                android:text="⏱️ Zadat výsledný čas"
+                android:visibility="gone"/>
         </LinearLayout>
 
     </LinearLayout>

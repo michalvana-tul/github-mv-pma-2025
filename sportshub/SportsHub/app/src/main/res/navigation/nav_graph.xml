@@ -15,11 +15,6 @@
         android:label="Výsledky" />
 
     <fragment
-        android:id="@+id/favoritesFragment"
-        android:name="com.example.sportshub.fragments.FavoritesFragment"
-        android:label="Oblíbené" />
-
-    <fragment
         android:id="@+id/sportsFragment"
         android:name="com.example.sportshub.fragments.SportsFragment"
         android:label="Sporty" />
@@ -37,7 +32,12 @@
     <fragment
         android:id="@+id/addMatchFragment"
         android:name="com.example.sportshub.fragments.AddMatchFragment"
-        android:label="Nový zápas" />
+        android:label="Nový zápas">
+        <argument
+            android:name="matchId"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
