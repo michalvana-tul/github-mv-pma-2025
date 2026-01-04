@@ -59,7 +59,13 @@ class MatchDetailFragment : Fragment() {
     private fun observeMatch() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.allMatches.collect { matches ->
-                val match = matches.find { it.id == args.matchId } ?: return@collect
+                val match = matches.find { it.id == args.matchId }
+                if (match == null) {
+                    if (isAdded) {
+                        try { findNavController().navigateUp() } catch (e: Exception) {}
+                    }
+                    return@collect
+                }
                 currentMatch = match
                 displayMatchData(match)
             }
@@ -67,7 +73,8 @@ class MatchDetailFragment : Fragment() {
     }
 
     private fun displayMatchData(match: Match) {
-        binding.apply {
+        val b = _binding ?: return
+        b.apply {
             tvSportName.text = match.sportName
             tvDate.text = match.date
 
@@ -79,10 +86,14 @@ class MatchDetailFragment : Fragment() {
                 tvAwayTeam.text = match.awayTeam
                 tvScore.text = "${match.homeScore} : ${match.awayScore}"
                 
-                viewHomeColor.setBackgroundColor(Color.parseColor(match.homeTeamColor))
-                viewAwayColor.setBackgroundColor(Color.parseColor(match.awayTeamColor))
+                try {
+                    viewHomeColor.setBackgroundColor(Color.parseColor(match.homeTeamColor))
+                    viewAwayColor.setBackgroundColor(Color.parseColor(match.awayTeamColor))
+                } catch (e: Exception) {
+                    viewHomeColor.setBackgroundColor(Color.GRAY)
+                    viewAwayColor.setBackgroundColor(Color.LTGRAY)
+                }
 
-                // Stats
                 layoutStats.visibility = if (match.isFinished) View.VISIBLE else View.GONE
                 match.possession?.let {
                     tvPossessionHome.text = "${it["first"]}%"
@@ -94,7 +105,6 @@ class MatchDetailFragment : Fragment() {
                     tvShotsAway.text = it["second"].toString()
                 }
 
-                // Buttons visibility
                 btnFinishMatch.visibility = if (!match.isFinished) View.VISIBLE else View.GONE
                 btnEditDuration.visibility = View.GONE
                 layoutAddEvent.visibility = if (!match.isFinished) View.VISIBLE else View.GONE
@@ -131,8 +141,10 @@ class MatchDetailFragment : Fragment() {
             currentMatch?.let { match ->
                 viewModel.finishMatch(match.id, match) { result ->
                     activity?.runOnUiThread {
-                        if (result.isSuccess) {
-                            Toast.makeText(context, "Zápas ukončen", Toast.LENGTH_SHORT).show()
+                        if (isAdded) {
+                            result.onSuccess {
+                                Toast.makeText(context, "Zápas ukončen", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
@@ -140,24 +152,22 @@ class MatchDetailFragment : Fragment() {
         }
 
         binding.btnEditDuration.setOnClickListener {
-            val action = MatchDetailFragmentDirections.actionGlobalAddMatchFragment(args.matchId)
-            findNavController().navigate(action)
+            try {
+                val action = MatchDetailFragmentDirections.actionGlobalAddMatchFragment(args.matchId)
+                findNavController().navigate(action)
+            } catch (e: Exception) {}
         }
 
-        // Home Team Actions
         binding.btnAddGoalHome.setOnClickListener { showAddEventDialog(EventType.GOAL, true) }
-        binding.btnAddCardHome.setOnClickListener { showAddEventDialog(EventType.YELLOW_CARD, true) }
-        binding.btnAddRedCardHome.setOnClickListener { showAddEventDialog(EventType.RED_CARD, true) }
-        
-        // Away Team Actions
         binding.btnAddGoalAway.setOnClickListener { showAddEventDialog(EventType.GOAL, false) }
+        binding.btnAddCardHome.setOnClickListener { showAddEventDialog(EventType.YELLOW_CARD, true) }
         binding.btnAddCardAway.setOnClickListener { showAddEventDialog(EventType.YELLOW_CARD, false) }
+        binding.btnAddRedCardHome.setOnClickListener { showAddEventDialog(EventType.RED_CARD, true) }
         binding.btnAddRedCardAway.setOnClickListener { showAddEventDialog(EventType.RED_CARD, false) }
     }
 
     private fun showAddEventDialog(type: EventType, isHome: Boolean) {
         val match = currentMatch ?: return
-        
         val context = requireContext()
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -192,7 +202,6 @@ class MatchDetailFragment : Fragment() {
             .setPositiveButton("Uložit") { _, _ ->
                 val minute = etMinute.text.toString().toIntOrNull() ?: 0
                 val player = etPlayer.text.toString().trim().ifEmpty { "Hráč" }
-                
                 saveEvent(type, isHome, minute, player)
             }
             .setNegativeButton("Zrušit", null)
@@ -201,22 +210,14 @@ class MatchDetailFragment : Fragment() {
 
     private fun saveEvent(type: EventType, isHome: Boolean, minute: Int, playerName: String) {
         val match = currentMatch ?: return
-        
         val event = MatchEvent(
-            type = type,
-            minute = minute,
+            type = type, minute = minute,
             team = if (isHome) match.homeTeam else match.awayTeam,
             playerName = playerName
         )
-
         viewModel.addEventToMatch(match.id, event, match.events)
-        
         if (type == EventType.GOAL) {
-            val updates = if (isHome) {
-                mapOf("homeScore" to match.homeScore + 1)
-            } else {
-                mapOf("awayScore" to match.awayScore + 1)
-            }
+            val updates = if (isHome) mapOf("homeScore" to match.homeScore + 1) else mapOf("awayScore" to match.awayScore + 1)
             viewModel.updateMatch(match.id, updates)
         }
     }
@@ -228,22 +229,21 @@ class MatchDetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_edit -> {
-                val action = MatchDetailFragmentDirections.actionGlobalAddMatchFragment(args.matchId)
-                findNavController().navigate(action)
+                try {
+                    val action = MatchDetailFragmentDirections.actionGlobalAddMatchFragment(args.matchId)
+                    findNavController().navigate(action)
+                } catch (e: Exception) {}
                 true
             }
             R.id.action_delete -> {
-                val context = activity?.applicationContext
-                val navController = findNavController()
+                val appContext = activity?.applicationContext
                 Snackbar.make(binding.root, "Opravdu chcete smazat tento zápas?", Snackbar.LENGTH_LONG)
                     .setAction("SMAZAT") {
                         viewModel.deleteMatch(args.matchId) { result ->
                             activity?.runOnUiThread {
-                                if (result.isSuccess) {
-                                    context?.let {
-                                        Toast.makeText(it, "Zápas smazán", Toast.LENGTH_LONG).show()
-                                    }
-                                    navController.navigateUp()
+                                if (result.isSuccess && isAdded) {
+                                    appContext?.let { Toast.makeText(it, "Zápas smazán", Toast.LENGTH_LONG).show() }
+                                    try { findNavController().navigateUp() } catch (e: Exception) {}
                                 }
                             }
                         }
