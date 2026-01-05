@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.sportshub.R
@@ -224,21 +225,22 @@ class AddMatchFragment : Fragment() {
     }
 
     private fun handleResult(result: Result<*>) {
-        val context = activity?.applicationContext
-        val navController = findNavController()
+        if (!isAdded) return
         
         activity?.runOnUiThread {
             if (result.isSuccess) {
-                context?.let {
-                    Toast.makeText(it, if (isEditMode) "Upraveno" else "Uloženo", Toast.LENGTH_LONG).show()
-                }
-                navController.navigateUp()
+                Toast.makeText(requireContext(), if (isEditMode) "Upraveno" else "Uloženo", Toast.LENGTH_SHORT).show()
+                
+                // Navigate to programFragment and clear the backstack
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.nav_graph, true)
+                    .build()
+                
+                findNavController().navigate(R.id.programFragment, null, navOptions)
             } else {
                 binding.btnSave.isEnabled = true
                 val error = result.exceptionOrNull()?.message ?: "Neznámá chyba"
-                context?.let {
-                    Toast.makeText(it, "Chyba: $error", Toast.LENGTH_LONG).show()
-                }
+                Toast.makeText(requireContext(), "Chyba: $error", Toast.LENGTH_SHORT).show()
             }
         }
     }
