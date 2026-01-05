@@ -99,7 +99,6 @@ class AddMatchFragment : Fragment() {
                     binding.etAwayTeam.setText(match.awayTeam)
                     binding.etHomeColor.setText(match.homeTeamColor)
                     binding.etAwayColor.setText(match.awayTeamColor)
-                    binding.cbIsLive.isChecked = match.isLive
                     val durationMin = (match.endTimestamp - match.timestamp) / (60 * 1000)
                     binding.etMatchDuration.setText(durationMin.toString())
                 } else {
@@ -172,7 +171,7 @@ class AddMatchFragment : Fragment() {
                 "date" to dateFormat.format(selectedDateTime.time),
                 "timestamp" to startTs,
                 "endTimestamp" to endTs,
-                "isLive" to b.cbIsLive.isChecked
+                "isLive" to false
             )
 
             if (isEditMode) {
@@ -186,7 +185,7 @@ class AddMatchFragment : Fragment() {
                     date = updates["date"] as String,
                     timestamp = startTs,
                     endTimestamp = endTs,
-                    isLive = b.cbIsLive.isChecked
+                    isLive = false
                 )
                 viewModel.addMatch(match) { result -> handleResult(result) }
             }
@@ -203,7 +202,8 @@ class AddMatchFragment : Fragment() {
                 "date" to dateFormat.format(selectedDateTime.time),
                 "timestamp" to startTs,
                 "endTimestamp" to endTs,
-                "isFinished" to isFinished
+                "isFinished" to isFinished,
+                "isLive" to false
             )
 
             if (isEditMode) {

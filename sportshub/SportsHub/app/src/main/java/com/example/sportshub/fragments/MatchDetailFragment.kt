@@ -74,6 +74,11 @@ class MatchDetailFragment : Fragment() {
 
     private fun displayMatchData(match: Match) {
         val b = _binding ?: return
+        val now = System.currentTimeMillis()
+        
+        // Match is considered "finished" if isFinished is true OR if endTimestamp has passed
+        val isMatchTrulyFinished = match.isFinished || match.endTimestamp <= now
+
         b.apply {
             tvSportName.text = match.sportName
             tvDate.text = match.date
@@ -94,7 +99,7 @@ class MatchDetailFragment : Fragment() {
                     viewAwayColor.setBackgroundColor(Color.LTGRAY)
                 }
 
-                layoutStats.visibility = if (match.isFinished) View.VISIBLE else View.GONE
+                layoutStats.visibility = if (isMatchTrulyFinished) View.VISIBLE else View.GONE
                 match.possession?.let {
                     tvPossessionHome.text = "${it["first"]}%"
                     tvPossessionAway.text = "${it["second"]}%"
@@ -105,9 +110,10 @@ class MatchDetailFragment : Fragment() {
                     tvShotsAway.text = it["second"].toString()
                 }
 
-                btnFinishMatch.visibility = if (!match.isFinished) View.VISIBLE else View.GONE
+                // Remove finish button if match is finished or timestamp passed
+                btnFinishMatch.visibility = if (!isMatchTrulyFinished) View.VISIBLE else View.GONE
                 btnEditDuration.visibility = View.GONE
-                layoutAddEvent.visibility = if (!match.isFinished) View.VISIBLE else View.GONE
+                layoutAddEvent.visibility = if (!isMatchTrulyFinished) View.VISIBLE else View.GONE
                 
             } else {
                 layoutTeamDetail.visibility = View.GONE

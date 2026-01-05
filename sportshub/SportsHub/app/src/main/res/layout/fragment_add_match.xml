@@ -89,12 +89,6 @@
                 android:text="90"
                 android:layout_marginBottom="16dp"/>
 
-            <CheckBox
-                android:id="@+id/cbIsLive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Zápas již probíhá (LIVE)"
-                android:layout_marginBottom="16dp"/>
         </LinearLayout>
 
         <!-- Pole pro individuální sport -->
