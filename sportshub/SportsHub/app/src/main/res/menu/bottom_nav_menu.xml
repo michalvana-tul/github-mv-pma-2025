@@ -10,7 +10,7 @@
         android:title="Výsledky" />
     <item
         android:id="@+id/sportsFragment"
-        android:icon="@android:drawable/ic_menu_directions"
+        android:icon="@android:drawable/ic_menu_add"
         android:title="Sporty" />
     <item
         android:id="@+id/settingsFragment"
