@@ -93,10 +93,14 @@ class SportsFragment : Fragment() {
                 )
 
                 viewModel.addSport(sport) { result ->
-                    result.onSuccess {
-                        Toast.makeText(requireContext(), "Sport přidán", Toast.LENGTH_SHORT).show()
-                    }.onFailure { e ->
-                        Toast.makeText(requireContext(), "Chyba: ${e.message}", Toast.LENGTH_SHORT).show()
+                    activity?.runOnUiThread {
+                        if (isAdded) {
+                            result.onSuccess {
+                                Toast.makeText(requireContext(), "Sport přidán", Toast.LENGTH_SHORT).show()
+                            }.onFailure { e ->
+                                Toast.makeText(requireContext(), "Chyba: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
             }
@@ -105,15 +109,21 @@ class SportsFragment : Fragment() {
     }
 
     private fun showDeleteDialog(sport: Sport) {
+        val context = requireContext().applicationContext
         AlertDialog.Builder(requireContext())
             .setTitle("Smazat sport?")
             .setMessage("Opravdu chcete smazat sport ${sport.name}?")
             .setPositiveButton("Smazat") { _, _ ->
                 viewModel.deleteSport(sport.id) { result ->
-                    result.onSuccess {
-                        Toast.makeText(requireContext(), "Sport smazán", Toast.LENGTH_SHORT).show()
-                    }.onFailure { e ->
-                        Toast.makeText(requireContext(), "Chyba: ${e.message}", Toast.LENGTH_SHORT).show()
+                    activity?.runOnUiThread {
+                        if (isAdded) {
+                            result.onSuccess {
+                                Toast.makeText(context, "Sport ${sport.name} byl smazán", Toast.LENGTH_LONG).show()
+                            }.onFailure { e ->
+                                val error = e.message ?: "Neznámá chyba"
+                                Toast.makeText(context, "Chyba při mazání: $error", Toast.LENGTH_LONG).show()
+                            }
+                        }
                     }
                 }
             }

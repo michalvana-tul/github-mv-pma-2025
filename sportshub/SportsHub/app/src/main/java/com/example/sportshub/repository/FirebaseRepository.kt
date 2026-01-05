@@ -85,7 +85,6 @@ class FirebaseRepository {
                 }
                 
                 MatchFilter.ALL -> allMatches
-                else -> allMatches // Failsafe
             }
 
             trySend(filteredMatches.sortedByDescending { it.timestamp })
@@ -144,6 +143,8 @@ class FirebaseRepository {
     suspend fun deleteAllMatches(): Result<Unit> {
         return try {
             val snapshot = matchesRef.get().await()
+            if (snapshot.isEmpty) return Result.success(Unit)
+            
             val batch = db.batch()
             for (doc in snapshot.documents) {
                 batch.delete(doc.reference)
