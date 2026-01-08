@@ -1,6 +1,9 @@
 package com.example.sportshub.models
 
+import java.util.UUID
+
 data class MatchEvent(
+    val id: String = UUID.randomUUID().toString(),
     val minute: Int = 0,
     val type: EventType = EventType.GOAL,
     val team: String = "", // "home" nebo "away"

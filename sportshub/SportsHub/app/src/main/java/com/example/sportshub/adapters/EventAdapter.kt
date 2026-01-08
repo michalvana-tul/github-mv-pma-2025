@@ -11,6 +11,7 @@ import com.example.sportshub.models.MatchEvent
 
 class EventAdapter : ListAdapter<MatchEvent, EventAdapter.EventViewHolder>(EventDiffCallback()) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding = ItemEventBinding.inflate(
             LayoutInflater.from(parent.context),

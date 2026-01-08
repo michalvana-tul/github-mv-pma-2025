@@ -1,6 +1,7 @@
 package com.example.sportshub.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,7 +10,16 @@ import com.example.sportshub.databinding.ItemMatchEventBinding
 import com.example.sportshub.models.EventType
 import com.example.sportshub.models.MatchEvent
 
-class MatchEventAdapter : ListAdapter<MatchEvent, MatchEventAdapter.EventViewHolder>(EventDiffCallback()) {
+class MatchEventAdapter(
+    private val onEventOptionsClick: (MatchEvent, View) -> Unit
+) : ListAdapter<MatchEvent, MatchEventAdapter.EventViewHolder>(EventDiffCallback()) {
+
+    private var isMatchFinished: Boolean = false
+
+    fun setMatchFinished(finished: Boolean) {
+        isMatchFinished = finished
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding = ItemMatchEventBinding.inflate(
@@ -17,16 +27,23 @@ class MatchEventAdapter : ListAdapter<MatchEvent, MatchEventAdapter.EventViewHol
             parent,
             false
         )
-        return EventViewHolder(binding)
+        return EventViewHolder(binding, onEventOptionsClick)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), isMatchFinished)
     }
 
-    class EventViewHolder(private val binding: ItemMatchEventBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: MatchEvent) {
+    class EventViewHolder(
+        private val binding: ItemMatchEventBinding,
+        private val onEventOptionsClick: (MatchEvent, View) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+        
+        fun bind(event: MatchEvent, isFinished: Boolean) {
             binding.apply {
+                btnEventOptions.visibility = if (isFinished) View.GONE else View.VISIBLE
+                btnEventOptions.setOnClickListener { onEventOptionsClick(event, it) }
+                
                 tvMinute.text = "${event.minute}'"
                 tvPlayerName.text = "${event.playerName} (${event.team})"
                 
@@ -49,17 +66,14 @@ class MatchEventAdapter : ListAdapter<MatchEvent, MatchEventAdapter.EventViewHol
                     }
                 }
                 
-                // Schováme ikonu, když používáme emojis v textu (volitelné, pro čistší vzhled)
-                ivEventType.visibility = android.view.View.GONE
+                ivEventType.visibility = View.GONE
             }
         }
     }
 
     private class EventDiffCallback : DiffUtil.ItemCallback<MatchEvent>() {
         override fun areItemsTheSame(oldItem: MatchEvent, newItem: MatchEvent): Boolean {
-            return oldItem.minute == newItem.minute && 
-                   oldItem.playerName == newItem.playerName && 
-                   oldItem.type == newItem.type
+            return oldItem.id == newItem.id
         }
         override fun areContentsTheSame(oldItem: MatchEvent, newItem: MatchEvent): Boolean {
             return oldItem == newItem

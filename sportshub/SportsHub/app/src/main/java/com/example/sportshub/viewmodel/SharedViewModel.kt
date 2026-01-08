@@ -100,4 +100,20 @@ class SharedViewModel : ViewModel() {
             repository.updateMatch(matchId, mapOf("events" to updatedEvents))
         }
     }
+
+    fun updateEventInMatch(matchId: String, eventId: String, updatedEvent: MatchEvent, currentEvents: List<MatchEvent>, onResult: ((Result<Unit>) -> Unit)? = null) {
+        val updatedList = currentEvents.map { if (it.id == eventId) updatedEvent else it }
+        viewModelScope.launch {
+            val result = repository.updateMatch(matchId, mapOf("events" to updatedList))
+            onResult?.invoke(result)
+        }
+    }
+
+    fun deleteEventFromMatch(matchId: String, eventId: String, currentEvents: List<MatchEvent>, onResult: ((Result<Unit>) -> Unit)? = null) {
+        val updatedList = currentEvents.filter { it.id != eventId }
+        viewModelScope.launch {
+            val result = repository.updateMatch(matchId, mapOf("events" to updatedList))
+            onResult?.invoke(result)
+        }
+    }
 }

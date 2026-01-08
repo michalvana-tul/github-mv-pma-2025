@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -49,10 +50,99 @@ class MatchDetailFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        eventAdapter = MatchEventAdapter()
+        eventAdapter = MatchEventAdapter { event, view ->
+            showEventPopupMenu(event, view)
+        }
         binding.rvEvents.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = eventAdapter
+        }
+    }
+
+    private fun showEventPopupMenu(event: MatchEvent, view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        popup.menu.add("Upravit")
+        popup.menu.add("Smazat")
+        popup.setOnMenuItemClickListener { item ->
+            when (item.title) {
+                "Upravit" -> {
+                    showEditEventDialog(event)
+                    true
+                }
+                "Smazat" -> {
+                    deleteEvent(event)
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun showEditEventDialog(event: MatchEvent) {
+        val match = currentMatch ?: return
+        val context = requireContext()
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
+        }
+
+        val etMinute = EditText(context).apply {
+            hint = "Minuta"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            setText(event.minute.toString())
+        }
+
+        val etPlayer = EditText(context).apply {
+            hint = "Jméno hráče"
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            setText(event.playerName)
+        }
+
+        layout.addView(etMinute)
+        layout.addView(etPlayer)
+
+        AlertDialog.Builder(context)
+            .setTitle("Upravit událost")
+            .setView(layout)
+            .setPositiveButton("Uložit") { _, _ ->
+                val minute = etMinute.text.toString().toIntOrNull() ?: event.minute
+                val player = etPlayer.text.toString().trim().ifEmpty { event.playerName }
+                val updatedEvent = event.copy(minute = minute, playerName = player)
+                viewModel.updateEventInMatch(match.id, event.id, updatedEvent, match.events) { result ->
+                    if (result.isSuccess) {
+                        activity?.runOnUiThread {
+                            if (isAdded) {
+                                Toast.makeText(context, "Událost upravena", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Zrušit", null)
+            .show()
+    }
+
+    private fun deleteEvent(event: MatchEvent) {
+        val match = currentMatch ?: return
+        viewModel.deleteEventFromMatch(match.id, event.id, match.events) { result ->
+            if (result.isSuccess) {
+                activity?.runOnUiThread {
+                    if (isAdded) {
+                        Snackbar.make(binding.root, "Událost smazána", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        
+        if (event.type == EventType.GOAL) {
+            val isHome = event.team == match.homeTeam
+            val updates = if (isHome) {
+                mapOf("homeScore" to (match.homeScore - 1).coerceAtLeast(0))
+            } else {
+                mapOf("awayScore" to (match.awayScore - 1).coerceAtLeast(0))
+            }
+            viewModel.updateMatch(match.id, updates)
         }
     }
 
@@ -76,7 +166,6 @@ class MatchDetailFragment : Fragment() {
         val b = _binding ?: return
         val now = System.currentTimeMillis()
         
-        // Match is considered "finished" if isFinished is true OR if endTimestamp has passed
         val isMatchTrulyFinished = match.isFinished || match.endTimestamp <= now
 
         b.apply {
@@ -110,7 +199,6 @@ class MatchDetailFragment : Fragment() {
                     tvShotsAway.text = it["second"].toString()
                 }
 
-                // Remove finish button if match is finished or timestamp passed
                 btnFinishMatch.visibility = if (!isMatchTrulyFinished) View.VISIBLE else View.GONE
                 btnEditDuration.visibility = View.GONE
                 layoutAddEvent.visibility = if (!isMatchTrulyFinished) View.VISIBLE else View.GONE
@@ -136,6 +224,7 @@ class MatchDetailFragment : Fragment() {
                 layoutAddEvent.visibility = View.GONE
             }
 
+            eventAdapter.setMatchFinished(isMatchTrulyFinished)
             eventAdapter.submitList(match.events.sortedByDescending { it.minute })
             tvNoEvents.visibility = if (match.events.isEmpty()) View.VISIBLE else View.GONE
         }

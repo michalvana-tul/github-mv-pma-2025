@@ -46,4 +46,12 @@
             android:textColor="#444444" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/btnEventOptions"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_more"
+        android:contentDescription="Možnosti" />
+
 </LinearLayout>
